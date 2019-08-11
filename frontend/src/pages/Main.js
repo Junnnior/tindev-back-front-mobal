@@ -9,6 +9,7 @@ import dislike from '../assets/dislike.svg';
 
 export default function Main({ match }){
 
+	// get users
 	const [users, setUsers] = useState([]);
 
 	useEffect(() => {
@@ -25,34 +26,58 @@ export default function Main({ match }){
 		loadUsers();
 	}, [match.params.id]);
 
+	// like
+	async function handleLike(id){
+		await api.post(`/devs/${id}/likes`, null,{
+			headers: {user: match.params.id},
+		});
+
+		// retira usuario da lista com dislike
+		setUsers(users.filter(user => user._id != id));
+	}
+
+	// dislike
+	async function handleDislike(id){
+
+		await api.post(`/devs/${id}/dislikes`, null,{
+			headers: {user: match.params.id},
+		});
+
+		// retira usuario da lista com dislike
+		setUsers(users.filter(user => user._id != id));
+	}
+
 	return (
 		<div className="main-container">
 			<img src={logo} alt="Tindev"/>
 
 			{/* dev list */}
-			<ul>
+			{users.length > 0 ? (
+				<ul>
+					{users.map(user => (
+					<li key={user._id}> 
+						<img src={user.avatar} alt={user.name} />
+						<footer>
+							<strong>{user.name}</strong>
+							<p>{user.bio}</p>
+						</footer>
 
-				{users.map(user => (
-				<li key={user._id}> 
-					<img src={user.avatar} alt={user.name} />
-					<footer>
-						<strong>{user.name}</strong>
-						<p>{user.bio}</p>
-					</footer>
+						<div className="buttons">
+							<button type="button" onClick={() => handleDislike(user._id)}>
+								<img src={dislike} alt="Dislike"/>
+							</button>
 
-					<div className="buttons">
-						<button type="button">
-							<img src={dislike} alt="Dislike"/>
-						</button>
+							<button type="button" onClick={() => handleLike(user._id)}>
+								<img src={like} alt="Like"/>
+							</button>
+						</div>
+					</li>
+					))}
+				</ul>
+			) : (
+				<div className="empty">Não há ninguém proximo a você</div>
+			)}
 
-						<button type="button">
-							<img src={like} alt="Like"/>
-						</button>
-					</div>
-				</li>
-				))}
-
-			</ul>
 		</div>
 	);
 }
