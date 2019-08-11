@@ -7,10 +7,12 @@
 
 html, body, #root {
     height: 100%;
+    width: 100%;
 }
 
 body {
-    background: #d3d3d3;
+	/*background: linear-gradient(rgba(2,0,36,1) 0%, rgba(4,1,1,1) 90%);*/
+	background: black;
 }
 
 body, input, button {
